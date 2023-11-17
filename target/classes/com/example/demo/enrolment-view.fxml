@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.EnrolmentViewController">
+   <children>
+      <VBox layoutX="101.0" layoutY="29.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+         <children>
+            <ChoiceBox fx:id="sectionChoiceBox" prefHeight="26.0" prefWidth="574.0">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </ChoiceBox>
+            <TableView fx:id="enrolmentViewStudentTableView" prefHeight="303.0" prefWidth="570.0">
+              <columns>
+                <TableColumn fx:id="studentIdColumn" prefWidth="75.0" text="Student Id" />
+                <TableColumn fx:id="studentLastNameColumn" prefWidth="141.0" text="Student Name " />
+                  <TableColumn fx:id="studentFirstNameColumn" prefWidth="77.0" text="D of B" />
+                  <TableColumn fx:id="studentDateOfBirthColumn" prefWidth="77.0" text="D of B" />
+                  <TableColumn fx:id="studentHomeTownColumn" prefWidth="77.0" text="D of B" />
+                  <TableColumn fx:id="studentHomeCountryColumn" prefWidth="77.0" text="D of B" />
+                  <TableColumn fx:id="studentHighSchoolAverageColumn" prefWidth="77.0" text="D of B" />
+              </columns>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </TableView>
+            <Button fx:id="sectionEnrolmentViewButton" mnemonicParsing="false" onAction="#onCloseEnrolmentViewButton" text="Close Enrolment View">
+               <VBox.margin>
+                  <Insets left="15.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
