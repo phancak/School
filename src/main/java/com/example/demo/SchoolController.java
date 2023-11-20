@@ -247,6 +247,28 @@ public class SchoolController implements Connectable{
         stage2.show();
     }
 
+    @FXML
+    public void onEditSectionButtonClick(){
+        FXMLLoader fxmlLoader2 = new FXMLLoader(SchoolApplication.class.getResource("new-section.fxml"));
+        Scene scene2 = null;
+        try {
+            scene2 = new Scene(fxmlLoader2.load()); //, 320, 640);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        //Pass data to controller
+        NewSectionController newSectionController = fxmlLoader2.getController();
+        newSectionController.initData(this, false);
+
+        Stage stage2 = new Stage();
+        stage2.setTitle("Edit Section");
+        stage2.setScene(scene2);
+        // Specifies the modality for new window.
+        stage2.initModality(Modality.APPLICATION_MODAL);
+        stage2.show();
+    }
+
     public void initialize_Student_Tab(){
         System.out.println("Initializing student tab");
 
@@ -632,9 +654,9 @@ public class SchoolController implements Connectable{
         sectionTableView.getItems().clear(); //Empty table
 
         //Request data from database
-        Database.getDatabaseData("SELECT Sections.Section_Id, Subjects.Subject_Name, Subjects.Subject_Number, " +
+        Database.getDatabaseData("SELECT Sections.Section_Id, Subjects.Subject_Name, Subjects.Subject_Number, Subjects.Subject_Id, " +
                 "Sections.Section_Start_Time, Sections.Section_End_Time, Sections.Section_Days, " +
-                "Instructors.Instructor_First_Name, Instructors.Instructor_Last_Name, " +
+                "Instructors.Instructor_First_Name, Instructors.Instructor_Last_Name, Instructors.Instructor_Id, Sections.Section_Room, " +
                 "COALESCE(Selection.Section_Enrolment, 0) as value " +
                 "FROM Sections " +
                 "LEFT JOIN Subjects " +

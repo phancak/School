@@ -2,13 +2,14 @@ package com.example.demo;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -19,22 +20,26 @@ public class NewSectionController implements Connectable{
 
     private boolean newSection; //Is new student being generated or existing student being edited
 
-    private ArrayList<String> subjectNameList = new ArrayList<String>();
-    private ArrayList<String> subjectNumberList = new ArrayList<String>();
+    private ArrayList<String> subjectList = new ArrayList<String>();
+    private ArrayList<String> subjectIdList = new ArrayList<String>();
     private ArrayList<String> startTimeList = new ArrayList<String>();
     private ArrayList<String> instructorList = new ArrayList<String>();
+    private ArrayList<String> instructorIdList = new ArrayList<String>();
     private ArrayList<String> daysList = new ArrayList<String>();
 
     //Pane title text
     @FXML private Text title = new Text();
 
     //Section Information Fields
-    @FXML private ChoiceBox subjectNameChoiceBox = new ChoiceBox();
-    @FXML private ChoiceBox subjectNumberChoiceBox = new ChoiceBox();
+    @FXML private ChoiceBox subjectChoiceBox = new ChoiceBox();
     @FXML private ChoiceBox startTimeChoiceBox = new ChoiceBox();
     @FXML private ChoiceBox endTimeChoiceBox = new ChoiceBox();
     @FXML private ChoiceBox instructorChoiceBox = new ChoiceBox();
     @FXML private ChoiceBox daysChoiceBox = new ChoiceBox();
+    @FXML private TextField roomTextField = new TextField();
+
+    //Window buttons
+    @FXML private Button addSectionButton = new Button();
 
     //Pass SchoolController caller object
     public void initData(SchoolController schoolController, boolean newSection){
@@ -43,10 +48,8 @@ public class NewSectionController implements Connectable{
         this.newSection = newSection; //New Section or Edit Section
 
         //Must initialize components from initData - login info
-        this.getSubjectNameData();
-        this.populateSubjectNameChoiceBox();
-        this.getSubjectNumberData();
-        this.populateSubjectNumberChoiceBox();
+        this.getSubjectData();
+        this.populateSubjectChoiceBox();
         this.getStartTimeData();
         this.populateStartTimeChoiceBox();
         this.populateEndTimeChoiceBox();
@@ -54,6 +57,18 @@ public class NewSectionController implements Connectable{
         this.populateInstructorChoiceBox();
         this.getDaysData();
         this.populateDaysChoiceBox();
+
+        //Existing student is being edited
+        if(!newSection){
+            this.title.setText("Edit Section");
+            this.addSectionButton.setText("Modify Section Entry");
+            this.subjectChoiceBox.getSelectionModel().select(this.subjectIdList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionId()));
+            this.startTimeChoiceBox.getSelectionModel().select(this.startTimeList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionStartTime()));
+            this.endTimeChoiceBox.getSelectionModel().select(this.startTimeList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionEndTime()));
+            this.instructorChoiceBox.getSelectionModel().select(this.instructorIdList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionInstructorId()));
+            this.roomTextField.setText(this.schoolController.sectionSelectedItems.get(0).getSectionRoom());
+            this.daysChoiceBox.getSelectionModel().select(this.daysList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionDays()));
+        }
     }
 
     @FXML
@@ -65,15 +80,10 @@ public class NewSectionController implements Connectable{
     @Override
     public void ProcessData(ResultSet rs, String opCode) {
         switch (opCode) {
-            case "requestSubjectName":
+            case "requestSubjectData":
                 //System.out.println("Processing Countries table");
-                this.processSubjectNameData(rs, this.subjectNameList);
-                this.schoolController.updateStatusTextFlow("Processed Subject Name Data");
-                break;
-            case "requestSubjectNumber":
-                //System.out.println("Processing Countries table");
-                this.processSubjectNumberData(rs, this.subjectNumberList);
-                this.schoolController.updateStatusTextFlow("Processed Subject Number Data");
+                this.processSubjectData(rs, this.subjectList);
+                this.schoolController.updateStatusTextFlow("Processed Subject Data");
                 break;
             case "requestInstructorData":
                 //System.out.println("Processing Countries table");
@@ -83,55 +93,32 @@ public class NewSectionController implements Connectable{
         }
     }
 
-    private void getSubjectNameData(){
+    private void getSubjectData(){
         //Request data from database
-        Database.getDatabaseData("SELECT DISTINCT Subjects.Subject_Name FROM Subjects;",
-                "requestSubjectName", this.schoolController.get_login_info(), this);
+        Database.getDatabaseData("SELECT DISTINCT Subjects.Subject_Id, Subjects.Subject_Name, Subjects.Subject_Number FROM Subjects;",
+                "requestSubjectData", this.schoolController.get_login_info(), this);
 
     }
 
-    public void processSubjectNameData(ResultSet rs, ArrayList<String> subjectNameList){
+    public void processSubjectData(ResultSet rs, ArrayList<String> subjectNameList){
         String string=null;
 
         try {
             while (rs.next()) {
-                string = new String(rs.getString(1));
-                subjectNameList.add(string);
+                String subjectId = new String(rs.getString(1));
+                String subjectName = new String(rs.getString(2));
+                String subjectNumber = new String(rs.getString(3));
+                this.subjectList.add(subjectName + " " + subjectNumber);
+                this.subjectIdList.add(subjectId); //Will coincide with the position in the ChoiceBox
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void populateSubjectNameChoiceBox(){
-        for(String subjectName: subjectNameList) {
-            this.subjectNameChoiceBox.getItems().add(subjectName);
-        }
-    }
-
-    private void getSubjectNumberData() {
-        // Request data from the database for subject numbers
-        Database.getDatabaseData("SELECT DISTINCT Subjects.Subject_Number FROM Subjects;",
-                "requestSubjectNumber", this.schoolController.get_login_info(), this);
-    }
-
-    public void processSubjectNumberData(ResultSet rs, ArrayList<String> subjectNumberList) {
-        String string = null;
-
-        try {
-            while (rs.next()) {
-                // Assuming SubjectNumber is a String, modify the data type accordingly
-                string = new String(rs.getString(1));
-                subjectNumberList.add(string);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void populateSubjectNumberChoiceBox() {
-        for (String subjectNumber : subjectNumberList) {
-            this.subjectNumberChoiceBox.getItems().add(subjectNumber);
+    public void populateSubjectChoiceBox(){
+        for(String subjectName: subjectList) {
+            this.subjectChoiceBox.getItems().add(subjectName);
         }
     }
 
@@ -149,7 +136,7 @@ public class NewSectionController implements Connectable{
     }
 
     public void getStartTimeData(){
-        for (int i=0; i<17;i++) {
+        for (int i=0; i<34;i++) {
             String timeString = "06:00:00"; //Earliest class
             LocalTime parsedTime = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm:ss"));
             LocalTime newTime = parsedTime.plusMinutes(30 * i);
@@ -167,7 +154,7 @@ public class NewSectionController implements Connectable{
 
     private void getInstructorData() {
         // Request data from the database
-        Database.getDatabaseData("SELECT DISTINCT Instructors.Instructor_Last_Name, Instructors.Instructor_First_Name, Instructors.Instructor_Date_Of_Birth FROM Instructors;",
+        Database.getDatabaseData("SELECT DISTINCT Instructors.Instructor_Id, Instructors.Instructor_Last_Name, Instructors.Instructor_First_Name, Instructors.Instructor_Date_Of_Birth FROM Instructors;",
                 "requestInstructorData", this.schoolController.get_login_info(), this);
     }
 
@@ -176,10 +163,12 @@ public class NewSectionController implements Connectable{
 
         try {
             while (rs.next()) {
-                String instructorLastName = new String(rs.getString(1));
-                String instructorFirstName =  new String(rs.getString(2));
-                String instructorDateOfBirth =  new String(rs.getString(3));
-                instructorList.add(instructorLastName + ", " + instructorFirstName + " DofB: " + instructorDateOfBirth);
+                String instructorId = new String(rs.getString(1));
+                String instructorLastName = new String(rs.getString(2));
+                String instructorFirstName =  new String(rs.getString(3));
+                String instructorDateOfBirth =  new String(rs.getString(4));
+                this.instructorIdList.add(instructorId); //Will coincide with the position in the ChoiceBox
+                this.instructorList.add(instructorLastName + ", " + instructorFirstName + " DofB: " + instructorDateOfBirth);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -211,7 +200,7 @@ public class NewSectionController implements Connectable{
 
     public void onAddSectionButton(){
         //Test for empty data fields
-        if (this.subjectNameChoiceBox.getSelectionModel().isEmpty() || this.subjectNumberChoiceBox.getSelectionModel().isEmpty() ||
+        if (this.subjectChoiceBox.getSelectionModel().isEmpty() ||
                 this.startTimeChoiceBox.getSelectionModel().isEmpty() || this.endTimeChoiceBox.getSelectionModel().isEmpty() ||
                 this.instructorChoiceBox.getSelectionModel().isEmpty() || this.daysChoiceBox.getSelectionModel().isEmpty()){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -222,42 +211,32 @@ public class NewSectionController implements Connectable{
             alert.showAndWait();
         } else {
             if (this.newSection) {
-                //Format date data
-                LocalDate studentDateOfBirthLocalDate = studentDateOfBirth.getValue();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                String studentDateOfBirthString = studentDateOfBirthLocalDate.format(formatter);
-
                 //Request data from database
-                Database.getDatabaseData("INSERT INTO Students (Student_First_Name, Student_Last_Name, Student_Date_Of_Birth, " +
-                                "Student_Home_Town, Student_Home_Country, Student_High_School_Average) " +
-                                "VALUES ('" + studentFirstName.getText() + "', '" +
-                                studentLastName.getText() + "', '" + studentDateOfBirthString + "', '" + studentHomeTown.getText() + "', '" +
-                                studentHomeCountry.getValue() + "', '" + studentHighschoolAverage.getText() + "');",
-                        "newStudents", this.schoolController.get_login_info(), this);
+                Database.getDatabaseData("INSERT INTO Sections (Instructor_Id, Subject_Id, " +
+                                "Section_Start_Time, Section_End_Time, Section_Room, Section_Days) " +
+                                "VALUES ('" + this.instructorIdList.get(this.instructorChoiceBox.getSelectionModel().getSelectedIndex()) + "', '" +
+                                this.subjectIdList.get(this.subjectChoiceBox.getSelectionModel().getSelectedIndex()) + "', '" +
+                                this.startTimeChoiceBox.getValue() + "', '" + this.endTimeChoiceBox.getValue() + "', '" +
+                                this.roomTextField.getText() + "', '" + this.daysChoiceBox.getValue() + "');",
+                        "newSection", this.schoolController.get_login_info(), this);
 
                 //Close the new student window
-                Stage currentStage = (Stage) this.studentFirstName.getScene().getWindow();
+                Stage currentStage = (Stage) this.subjectChoiceBox.getScene().getWindow();
                 currentStage.close();
-                this.schoolController.onTabStudentSelection(); //Reacquire Student list
+                this.schoolController.onTabSectionsSelection(); //Reacquire Section list
             } else {
-                //Edit existing student
-                LocalDate studentDateOfBirthLocalDate = studentDateOfBirth.getValue();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                String studentDateOfBirthString = studentDateOfBirthLocalDate.format(formatter);
-
                 //Request data from database
-                Database.getDatabaseData("UPDATE Students " +
-                                "SET Student_First_Name='" + studentFirstName.getText() +
-                                "', Student_Last_Name='" + studentLastName.getText() + "', Student_Date_Of_Birth='" + studentDateOfBirthString +
-                                "', Student_Home_Town='" + studentHomeTown.getText() + "', Student_Home_Country='" + studentHomeCountry.getValue() +
-                                "', Student_High_School_Average='" + studentHighschoolAverage.getText() + "'" +
-                                "WHERE Student_Id=" + schoolController.studentSelectedItems.get(0).getStudentId() + ";",
+                Database.getDatabaseData("UPDATE Sections " +
+                                "SET Subject_Id='" + this.subjectIdList.get(this.subjectChoiceBox.getSelectionModel().getSelectedIndex()) + "', Section_Start_Time='" + this.startTimeChoiceBox.getValue() +
+                                "', Section_End_Time='" + this.endTimeChoiceBox.getValue() + "', Section_Room='" + this.roomTextField.getText() +
+                                "', Section_Days='" + this.daysChoiceBox.getValue() + "'" +
+                                "WHERE Instructor_Id=" + schoolController.sectionSelectedItems.get(0).getSectionId() + ";",
                         "update", this.schoolController.get_login_info(), this);
 
                 //Close the new student window
-                Stage currentStage = (Stage) this.studentFirstName.getScene().getWindow();
+                Stage currentStage = (Stage) this.subjectChoiceBox.getScene().getWindow();
                 currentStage.close();
-                this.schoolController.onTabStudentSelection(); //Reacquire Student list
+                this.schoolController.onTabSectionsSelection(); //Reacquire Section list
             }
         }
     }
