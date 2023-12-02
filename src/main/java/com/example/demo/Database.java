@@ -1,10 +1,13 @@
 package com.example.demo;
 
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
+import javafx.scene.control.ChoiceBox;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Database {
 
@@ -27,6 +30,8 @@ public class Database {
         ResultSet rs = null;
 
         try {
+            alert.show();
+
             String jdbcUrl = "jdbc:mysql://localhost:3306/School";
             String username = login_info.getUser_name(); //"root";
             String password = login_info.getPass(); //"12345678";
@@ -46,6 +51,17 @@ public class Database {
                 connectable.ProcessData(rs, opCode);
             }
 
+            /*
+            try {
+                // Pause for 3 seconds (3000 milliseconds)
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+             */
+
+
             //Close the Alert Dialog
             //alert.close();
         } catch (CommunicationsException e) {
@@ -63,9 +79,32 @@ public class Database {
                     e.printStackTrace();
                 }
             }
+
+            //Close the Alert Dialog
+            alert.close();
         }
 
         return 0;
+    }
+
+    public static void initialize_Section_ChoiceBox(ChoiceBox targetChoiceBox, ObservableList<Section> sectionList, ArrayList<String> sectionIdList) {
+        System.out.println("About to clear enrolmentSectionChoiceBox");
+        //CLear values already in ChoiceBox
+        targetChoiceBox.getItems().clear(); //Calls the listener - treats this as change in selection in the box
+
+        System.out.println("Cleared enrolmentSectionChoiceBox");
+        if(sectionList.size() != 0) {
+            for (Section section : sectionList) {
+                targetChoiceBox.getItems().add("Id:" + section.getSectionId() +
+                        " " + section.getSectionSubject() +
+                        " " + section.getSectionInstructor() +
+                        " " + section.getSectionDays() +
+                        " Start:" + section.getSectionStartTime() +
+                        " End:" + section.getSectionEndTime() +
+                        " Room: " + section.getSectionRoom());
+                sectionIdList.add(section.getSectionId()); //Keeps a separate list of section ids
+            }
+        }
     }
 }
 

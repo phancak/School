@@ -8,6 +8,9 @@ import java.sql.SQLException;
 
 public class Section {
 
+    //Tracks the version of the table when it was last retrieved
+    private static int last_accessed_section_table_version;
+
     private SimpleStringProperty sectionId;
     private SimpleStringProperty sectionSubject;
     private SimpleStringProperty sectionSubjectId;
@@ -34,6 +37,9 @@ public class Section {
 
     public static void processSectionsTable(ResultSet rs, ObservableList<Section> sectionList){
         Section testSection = null;
+        sectionList.clear();
+
+        sectionList.clear(); //Clear old data
 
         try {
             while (rs.next()) {
@@ -50,6 +56,7 @@ public class Section {
                 String sectionRoom = rs.getString(11);
                 String sectionEnrolment = rs.getString(12);
 
+                /*
                 System.out.println("Section Id: " + sectionId);
                 System.out.println("Section Subject Name: " + sectionSubjectName);
                 System.out.println("Section Subject Number: " + sectionSubjectNumber);
@@ -59,6 +66,8 @@ public class Section {
                 System.out.println("Section Instructor: " + sectionInstructorLastName);
                 System.out.println("sectionEnrolment: " + sectionEnrolment);
                 System.out.println("");
+
+                 */
 
                 // Check if sectionList already contains the section
                 testSection = new Section();

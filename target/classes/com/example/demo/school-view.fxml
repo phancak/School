@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -14,6 +15,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
 <VBox alignment="TOP_CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="599.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.SchoolController">
@@ -39,9 +41,9 @@
          <Insets />
       </VBox.margin>
    </MenuBar>
-   <TabPane prefHeight="470.0" prefWidth="738.0" tabClosingPolicy="UNAVAILABLE">
+   <TabPane fx:id="tabPaneSchool" prefHeight="470.0" prefWidth="738.0" tabClosingPolicy="UNAVAILABLE">
      <tabs>
-       <Tab onSelectionChanged="#onTabStudentSelection" text="Students">
+       <Tab fx:id="tabStudents" text="Students">
          <content>
            <AnchorPane fx:id="studentsTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
                   <children>
@@ -114,7 +116,7 @@
                   </children></AnchorPane>
          </content>
        </Tab>
-         <Tab onSelectionChanged="#onTabInstructorsSelection" text="Instructors">
+         <Tab fx:id="tabInstructors" text="Instructors">
              <content>
                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
                   <children>
@@ -194,7 +196,7 @@
                   </children></AnchorPane>
              </content>
          </Tab>
-         <Tab onSelectionChanged="#onTabSubjectsSelection" text="Subjects">
+         <Tab fx:id="tabSubjects" text="Subjects">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
                   <children>
@@ -275,7 +277,7 @@
                </AnchorPane>
             </content>
          </Tab>
-         <Tab onSelectionChanged="#onTabSectionsSelection" text="Sections">
+         <Tab fx:id="tabSections" text="Sections">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
                   <children>
@@ -283,13 +285,14 @@
                         <children>
                            <TableView fx:id="sectionTableView" prefHeight="396.0" prefWidth="670.0">
                               <columns>
-                                 <TableColumn fx:id="sectionTableViewIdColumn" prefWidth="75.0" text="Section Id" />
+                                 <TableColumn fx:id="sectionTableViewIdColumn" prefWidth="30.0" text="Id" />
                                  <TableColumn fx:id="sectionTableViewSubjectColumn" prefWidth="100.0" text="Subject" />
                                  <TableColumn fx:id="sectionTableViewStartTimeColumn" prefWidth="76.0" text="Start Time" />
                                  <TableColumn fx:id="sectionTableViewEndTimeColumn" text="End Time" />
-                                 <TableColumn fx:id="sectionTableViewInstructorColumn" prefWidth="169.0" text="Instructor" />
-                                 <TableColumn fx:id="sectionTableViewDaysColumn" prefWidth="82.0" text="Days" />
-                                 <TableColumn fx:id="sectionTableViewEnrolmentColumn" prefWidth="87.0" text="Enrolment" />
+                                 <TableColumn fx:id="sectionTableViewInstructorColumn" prefWidth="130.0" text="Instructor" />
+                                 <TableColumn fx:id="sectionTableViewDaysColumn" prefWidth="60.0" text="Days" />
+                                 <TableColumn fx:id="sectionTableViewRoomColumn" text="Room" />
+                                 <TableColumn fx:id="sectionTableViewEnrolmentColumn" text="Enrolment" />
                               </columns>
                            </TableView>
                            <HBox prefHeight="56.0" prefWidth="670.0">
@@ -322,83 +325,266 @@
                </AnchorPane>
             </content>
          </Tab>
-         <Tab onSelectionChanged="#onTabSubjectsSelection" text="Enrolment">
+         <Tab fx:id="tabEnrolment" text="Enrolment">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
                   <children>
-                     <HBox prefHeight="408.0" prefWidth="715.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                     <VBox prefHeight="469.0" prefWidth="670.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                         <children>
-                           <TableView fx:id="subjectsTableView1" prefHeight="388.0" prefWidth="353.0">
-                              <columns>
-                                 <TableColumn fx:id="subjectTableViewIdColumn1" prefWidth="75.0" text="Subject Id" />
-                                 <TableColumn fx:id="subjectTableViewNameColumn1" prefWidth="93.0" text="Name" />
-                                 <TableColumn fx:id="subjectTableViewNumberColumn1" prefWidth="72.0" text="Number" />
-                                 <TableColumn fx:id="subjectTableViewNoSectionsColumn1" prefWidth="74.0" text="Sections" />
-                              </columns>
-                              <HBox.margin>
-                                 <Insets right="15.0" />
-                              </HBox.margin>
-                           </TableView>
-                           <VBox prefHeight="388.0" prefWidth="337.0">
+                           <AnchorPane prefHeight="26.0" prefWidth="200.0">
                               <children>
-                                 <TitledPane animated="false" collapsible="false" prefHeight="175.0" prefWidth="329.0" text="Subject Information" VBox.vgrow="ALWAYS">
-                                    <content>
-                                       <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="148.0" prefWidth="300.0">
-                                          <children>
-                                             <HBox layoutX="20.4" layoutY="20.4" prefHeight="127.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                <children>
-                                                   <TextFlow fx:id="subjectTab_Info_LeftTextFlow1" prefHeight="105.0" prefWidth="170.0" />
-                                                   <TextFlow fx:id="subjectTab_Info_RightTextFlow1" layoutX="10.0" layoutY="10.0" prefHeight="128.0" prefWidth="200.0" />
-                                                </children>
-                                             </HBox>
-                                          </children>
-                                       </AnchorPane>
-                                    </content>
-                                    <VBox.margin>
-                                       <Insets bottom="15.0" />
-                                    </VBox.margin>
-                                 </TitledPane>
-                                 <TitledPane animated="false" collapsible="false" layoutX="10.0" layoutY="10.0" prefHeight="175.0" prefWidth="329.0" text="Scheduled Class Times and Locations">
-                                    <content>
-                                       <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="148.0" prefWidth="300.0">
-                                          <children>
-                                             <HBox layoutX="20.4" layoutY="20.4" prefHeight="127.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                <children>
-                                                   <TextFlow fx:id="instructorTab_PersonalInfo_LeftTextFlow111" prefHeight="105.0" prefWidth="170.0" />
-                                                   <TextFlow fx:id="instructorTab_PersonalInfo_RightTextFlow111" layoutX="10.0" layoutY="10.0" prefHeight="128.0" prefWidth="200.0" />
-                                                </children>
-                                             </HBox>
-                                             <ListView fx:id="subjectTabListView1" prefHeight="150.0" prefWidth="318.0" />
-                                          </children>
-                                       </AnchorPane>
-                                    </content>
-                                 </TitledPane>
-                                 <HBox prefHeight="51.0" prefWidth="302.0">
+                                 <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <children>
-                                       <Button fx:id="removeSubjectButton1" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Remove Subject">
+                                       <Text fill="#545454" strokeType="OUTSIDE" strokeWidth="0.0" text="Section: ">
                                           <HBox.margin>
-                                             <Insets left="15.0" right="15.0" top="10.0" />
+                                             <Insets top="5.0" />
                                           </HBox.margin>
-                                       </Button>
-                                       <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="New Subject">
+                                       </Text>
+                                       <ChoiceBox fx:id="enrolmentSectionChoiceBox" prefHeight="26.0" prefWidth="670.0">
                                           <HBox.margin>
-                                             <Insets right="15.0" top="10.0" />
+                                             <Insets />
                                           </HBox.margin>
-                                       </Button>
-                                       <Button fx:id="editSubjectButton1" mnemonicParsing="false" text="Edit">
+                                       </ChoiceBox>
+                                    </children>
+                                 </HBox>
+                              </children>
+                              <VBox.margin>
+                                 <Insets bottom="10.0" />
+                              </VBox.margin>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="371.0" prefWidth="670.0">
+                              <children>
+                                 <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                       <AnchorPane prefHeight="371.0" prefWidth="300.0">
+                                          <children>
+                                             <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <children>
+                                                   <TitledPane collapsible="false" prefHeight="26.0" prefWidth="200.0" text="Students Out of Section" textAlignment="CENTER" textFill="#616161">
+                                                      <VBox.margin>
+                                                         <Insets bottom="5.0" />
+                                                      </VBox.margin>
+                                                   </TitledPane>
+                                                   <AnchorPane prefHeight="345.0" prefWidth="294.0">
+                                                      <children>
+                                                         <TableView fx:id="enrolmentNotenrolledTableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                           <columns>
+                                                             <TableColumn fx:id="enrolmentNotenrolledTableViewStudentIdColumn" editable="false" prefWidth="44.0" text="Id" />
+                                                             <TableColumn fx:id="enrolmentNotenrolledTableViewStudentNameColumn" editable="false" prefWidth="160.0" text="Name" />
+                                                               <TableColumn fx:id="enrolmentNotenrolledTableViewStudentDofBColumn" editable="false" prefWidth="72.0" text="D of B" />
+                                                           </columns>
+                                                         </TableView>
+                                                      </children>
+                                                   </AnchorPane>
+                                                </children>
+                                             </VBox>
+                                          </children>
                                           <HBox.margin>
-                                             <Insets top="10.0" />
+                                             <Insets right="10.0" />
+                                          </HBox.margin>
+                                       </AnchorPane>
+                                       <AnchorPane prefHeight="371.0" prefWidth="70.0">
+                                          <children>
+                                             <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <children>
+                                                   <Button fx:id="enrolButton" mnemonicParsing="false" onAction="#enrolButtonClick" prefHeight="26.0" prefWidth="63.0" text="&gt;&gt;">
+                                                      <VBox.margin>
+                                                         <Insets bottom="10.0" top="150.0" />
+                                                      </VBox.margin>
+                                                   </Button>
+                                                   <Button fx:id="unenrolButton" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#unenrolButtonClick" prefHeight="26.0" prefWidth="63.0" text="&lt;&lt;" />
+                                                </children>
+                                             </VBox>
+                                          </children>
+                                          <HBox.margin>
+                                             <Insets right="10.0" />
+                                          </HBox.margin>
+                                       </AnchorPane>
+                                       <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="371.0" prefWidth="300.0">
+                                          <children>
+                                             <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <children>
+                                                   <TitledPane collapsible="false" prefHeight="26.0" prefWidth="200.0" text="Students Enrolled in Section" textFill="#5b5b5b">
+                                                      <VBox.margin>
+                                                         <Insets bottom="5.0" />
+                                                      </VBox.margin>
+                                                   </TitledPane>
+                                                   <AnchorPane prefHeight="343.0" prefWidth="294.0">
+                                                      <children>
+                                                         <TableView fx:id="enrolmentEnrolledTableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                            <columns>
+                                                               <TableColumn fx:id="enrolmentEnrolledTableViewStudentIdColumn" prefWidth="44.0" text="Id" />
+                                                               <TableColumn fx:id="enrolmentEnrolledTableViewStudentNameColumn" prefWidth="160.0" text="Name" />
+                                                               <TableColumn fx:id="enrolmentEnrolledTableViewStudentDofBColumn" prefWidth="72.0" text="D of B" />
+                                                            </columns>
+                                                         </TableView>
+                                                      </children>
+                                                   </AnchorPane>
+                                                </children>
+                                             </VBox>
+                                          </children>
+                                       </AnchorPane>
+                                    </children>
+                                 </HBox>
+                              </children>
+                           </AnchorPane>
+                        </children>
+                     </VBox>
+                  </children>
+               </AnchorPane>
+            </content>
+         </Tab>
+         <Tab fx:id="tabGradedItems" text="Graded Items">
+            <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
+                  <children>
+                     <VBox prefHeight="469.0" prefWidth="670.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                        <children>
+                           <AnchorPane prefHeight="26.0" prefWidth="200.0">
+                              <children>
+                                 <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                       <Text fill="#545454" strokeType="OUTSIDE" strokeWidth="0.0" text="Section: ">
+                                          <HBox.margin>
+                                             <Insets top="5.0" />
+                                          </HBox.margin>
+                                       </Text>
+                                       <ChoiceBox fx:id="gardedItemSectionChoiceBox" prefHeight="26.0" prefWidth="670.0">
+                                          <HBox.margin>
+                                             <Insets />
+                                          </HBox.margin>
+                                       </ChoiceBox>
+                                    </children>
+                                 </HBox>
+                              </children>
+                              <VBox.margin>
+                                 <Insets />
+                              </VBox.margin>
+                           </AnchorPane>
+                           <AnchorPane fx:id="studentsTabAnchorPane1" minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
+                              <children>
+                                 <HBox fx:id="studentsTabHBox1" layoutX="14.0" layoutY="14.0" prefHeight="408.0" prefWidth="715.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0">
+                                    <children>
+                                       <TableView fx:id="gradedItemTableView" prefHeight="388.0" prefWidth="353.0">
+                                          <columns>
+                                             <TableColumn fx:id="gradedItemTableViewId" minWidth="30.0" prefWidth="30.0" text="Id" />
+                                             <TableColumn fx:id="gradedItemTableViewTitle" prefWidth="168.0" text="Title" />
+                                             <TableColumn fx:id="gradedItemTableViewDate" prefWidth="69.0" text="Date" />
+                                             <TableColumn fx:id="gradedItemTableViewAverage" prefWidth="69.0" text="Average" />
+                                          </columns>
+                                          <HBox.margin>
+                                             <Insets right="15.0" />
+                                          </HBox.margin>
+                                       </TableView>
+                                       <AnchorPane prefHeight="360.0" prefWidth="302.0">
+                                          <children>
+                                             <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <children>
+                                                   <TitledPane animated="false" collapsible="false" prefHeight="144.0" prefWidth="302.0" text="Details">
+                                                     <content>
+                                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                     </content>
+                                                      <VBox.margin>
+                                                         <Insets bottom="15.0" />
+                                                      </VBox.margin>
+                                                   </TitledPane>
+                                                   <TitledPane animated="false" collapsible="false" prefHeight="159.0" prefWidth="302.0" text="Marks">
+                                                     <content>
+                                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                     </content>
+                                                   </TitledPane>
+                                                   <HBox prefHeight="51.0" prefWidth="302.0">
+                                                      <children>
+                                                         <Button fx:id="removeStudentButton1" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Remove Item">
+                                                            <HBox.margin>
+                                                               <Insets left="15.0" right="15.0" top="10.0" />
+                                                            </HBox.margin>
+                                                         </Button>
+                                                         <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onNewStudentButtonClick" text="New Item">
+                                                            <HBox.margin>
+                                                               <Insets right="15.0" top="10.0" />
+                                                            </HBox.margin>
+                                                         </Button>
+                                                         <Button fx:id="editStudentButton1" alignment="CENTER" contentDisplay="CENTER" layoutX="148.0" layoutY="20.0" mnemonicParsing="false" onAction="#onEditStudentButtonClick" text="Edit">
+                                                            <HBox.margin>
+                                                               <Insets top="10.0" />
+                                                            </HBox.margin>
+                                                         </Button>
+                                                      </children>
+                                                   </HBox>
+                                                </children>
+                                             </VBox>
+                                          </children>
+                                       </AnchorPane>
+                                    </children>
+                                 </HBox>
+                              </children>
+                           </AnchorPane>
+                        </children>
+                     </VBox>
+                  </children>
+               </AnchorPane>
+            </content>
+         </Tab>
+         <Tab fx:id="tabGradeBook1" text="Grade Book">
+            <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="375.0" prefWidth="587.0">
+                  <children>
+                     <VBox prefHeight="469.0" prefWidth="670.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+                        <children>
+                           <AnchorPane prefHeight="26.0" prefWidth="200.0">
+                              <children>
+                                 <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                       <Text fill="#545454" strokeType="OUTSIDE" strokeWidth="0.0" text="Section: ">
+                                          <HBox.margin>
+                                             <Insets top="5.0" />
+                                          </HBox.margin>
+                                       </Text>
+                                       <ChoiceBox fx:id="enrolmentSectionChoiceBox11" prefHeight="26.0" prefWidth="670.0">
+                                          <HBox.margin>
+                                             <Insets />
+                                          </HBox.margin>
+                                       </ChoiceBox>
+                                    </children>
+                                 </HBox>
+                              </children>
+                              <VBox.margin>
+                                 <Insets bottom="10.0" />
+                              </VBox.margin>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="334.0" prefWidth="670.0">
+                              <children>
+                                 <TableView prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <columns>
+                                       <TableColumn prefWidth="33.0" text="Id" />
+                                       <TableColumn prefWidth="169.0" text="Name" />
+                                       <TableColumn prefWidth="77.0" text="Date" />
+                                       <TableColumn prefWidth="78.0" text="Average" />
+                                       <TableColumn prefWidth="79.0" text="Out of" />
+                                       <TableColumn prefWidth="79.0" text="Weight" />
+                                    </columns>
+                                 </TableView>
+                              </children>
+                              <VBox.margin>
+                                 <Insets bottom="10.0" />
+                              </VBox.margin>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="41.0" prefWidth="670.0">
+                              <children>
+                                 <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <children>
+                                       <Button mnemonicParsing="false" text="Button">
+                                          <HBox.margin>
+                                             <Insets left="15.0" />
                                           </HBox.margin>
                                        </Button>
                                     </children>
                                  </HBox>
                               </children>
-                              <HBox.margin>
-                                 <Insets bottom="15.0" />
-                              </HBox.margin>
-                           </VBox>
+                           </AnchorPane>
                         </children>
-                     </HBox>
+                     </VBox>
                   </children>
                </AnchorPane>
             </content>
@@ -408,5 +594,8 @@
          <Insets />
       </VBox.margin>
    </TabPane>
-   <TextFlow fx:id="statusTextflow1" prefHeight="105.0" prefWidth="738.0" />
+   <TextFlow fx:id="statusTextflow1" prefHeight="105.0" prefWidth="738.0">
+      <VBox.margin>
+         <Insets />
+      </VBox.margin></TextFlow>
 </VBox>

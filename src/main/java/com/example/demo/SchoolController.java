@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -16,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Queue;
@@ -32,6 +35,16 @@ public class SchoolController implements Connectable{
     @FXML private Text statusText4 = new Text("\n");
     @FXML private Text statusText5 = new Text("\n");
 
+    //Tabs list
+    @FXML private TabPane tabPaneSchool = new TabPane();
+    @FXML private Tab tabStudents = new Tab();
+    @FXML private Tab tabInstructors = new Tab();
+    @FXML private Tab tabSections = new Tab();
+    @FXML private Tab tabSubjects = new Tab();
+    @FXML private Tab tabEnrolment = new Tab();
+    @FXML private Tab tabGradedItems = new Tab();
+    @FXML private Tab tabGradeBook = new Tab();
+
     @FXML private ObservableList<String> systemMessages = FXCollections.observableArrayList();
     @FXML private ObservableList<String> studentEnrolledSections = FXCollections.observableArrayList();
     @FXML private ObservableList<String> instructorSections = FXCollections.observableArrayList();
@@ -40,30 +53,42 @@ public class SchoolController implements Connectable{
     @FXML private TableView<Instructor> instructorTableView = new TableView<>();
     @FXML private TableView<Subject> subjectsTableView = new TableView<>();
     @FXML private TableView<Section> sectionTableView = new TableView<>();
+    @FXML private TableView<Student> enrolmentEnrolledTableView = new TableView<>();
+    @FXML private TableView<Student> enrolmentNotenrolledTableView = new TableView<>();
     @FXML private ListView<String> studentTabListView = new ListView<>();
     @FXML private ListView<String> instructorTabListView = new ListView<>();
     @FXML private ListView<String> subjectTabListView = new ListView<>();
+    @FXML private TableView<GradedItem> gradedItemTableView = new TableView<>();
 
     //Tableview selection models
     private TableView.TableViewSelectionModel<Student> studentSelectionModel;
     private TableView.TableViewSelectionModel<Instructor> instructorSelectionModel;
     private TableView.TableViewSelectionModel<Subject> subjectsSelectionModel;
     private TableView.TableViewSelectionModel<Section> sectionSelectionModel;
+    private TableView.TableViewSelectionModel<Student> enrolmentEnrolledSelectionModel;
+    private TableView.TableViewSelectionModel<Student> enrolmentNotenrolledSelectionModel;
+    private TableView.TableViewSelectionModel<GradedItem> gradedItemSelectionModel;
 
     //Tableview selection list
     ObservableList<Student> studentSelectedItems;
     ObservableList<Instructor> instructorSelectedItems;
     ObservableList<Subject> subjectsSelectedItems;
     ObservableList<Section> sectionSelectedItems;
+    ObservableList<Student> enrolmentEnrolledSelectedItems;
+    ObservableList<Student> enrolmentNotenrolledSelectedItems;
+    ObservableList<GradedItem> gradedItemSelectedItems;
 
     //Object observable list setup
     @FXML private ObservableList<Student> studentList = FXCollections.observableArrayList();
     @FXML private ObservableList<Instructor> instructorList = FXCollections.observableArrayList();
     @FXML private ObservableList<Subject> subjectList = FXCollections.observableArrayList();
     @FXML private ObservableList<Section> sectionList = FXCollections.observableArrayList();
+    @FXML private ObservableList<Student> enrolmentEnrolledList = FXCollections.observableArrayList();
+    @FXML private ObservableList<Student> enrolmentNotenrolledList = FXCollections.observableArrayList();
+    @FXML private ObservableList<GradedItem> gradedItemList = FXCollections.observableArrayList();
 
     //TableView Column Setup
-    @FXML private TableColumn studentTableViewIdColumn = new TableColumn<>("Student Id");
+    @FXML private TableColumn studentTableViewIdColumn = new TableColumn<>("Id");
     @FXML private TableColumn studentTableViewFirstNameColumn = new TableColumn("First Name");
     @FXML private TableColumn studentTableViewLastNameColumn = new TableColumn("Last Name");
     @FXML private TableColumn studentTableViewDofBColumn = new TableColumn("DofB");
@@ -71,17 +96,28 @@ public class SchoolController implements Connectable{
     @FXML private TableColumn instructorTableViewFirstNameColumn = new TableColumn("Last Name");
     @FXML private TableColumn instructorTableViewLastNameColumn = new TableColumn("Last Name");
     @FXML private TableColumn instructorTableViewDofBColumn = new TableColumn("DofB");
-    @FXML private TableColumn subjectTableViewIdColumn = new TableColumn("Subject Id");
+    @FXML private TableColumn subjectTableViewIdColumn = new TableColumn("Id");
     @FXML private TableColumn subjectTableViewNameColumn = new TableColumn("Name");
     @FXML private TableColumn subjectTableViewNumberColumn = new TableColumn("Number");
     @FXML private TableColumn subjectTableViewNoSectionsColumn = new TableColumn("Sections");
-    @FXML private TableColumn sectionTableViewIdColumn = new TableColumn<>("Section Id");
+    @FXML private TableColumn sectionTableViewIdColumn = new TableColumn<>("Id");
     @FXML private TableColumn sectionTableViewSubjectColumn = new TableColumn<>("Subject");
     @FXML private TableColumn sectionTableViewStartTimeColumn = new TableColumn<>("Start Time");
     @FXML private TableColumn sectionTableViewEndTimeColumn = new TableColumn<>("End Time");
     @FXML private TableColumn sectionTableViewDaysColumn = new TableColumn<>("Days");
     @FXML private TableColumn sectionTableViewInstructorColumn = new TableColumn<>("Instructor");
+    @FXML private TableColumn sectionTableViewRoomColumn = new TableColumn<>("Room");
     @FXML private TableColumn sectionTableViewEnrolmentColumn = new TableColumn<>("Enrolment");
+    @FXML private TableColumn enrolmentEnrolledTableViewStudentIdColumn = new TableColumn<>("Id");
+    @FXML private TableColumn enrolmentNotenrolledTableViewStudentIdColumn = new TableColumn<>("Student Id");
+    @FXML private TableColumn enrolmentEnrolledTableViewStudentNameColumn = new TableColumn<>("Name");
+    @FXML private TableColumn enrolmentNotenrolledTableViewStudentNameColumn = new TableColumn<>("Name");
+    @FXML private TableColumn enrolmentEnrolledTableViewStudentDofBColumn = new TableColumn<>("DofB");
+    @FXML private TableColumn enrolmentNotenrolledTableViewStudentDofBColumn = new TableColumn<>("DofB");
+    @FXML private TableColumn gradedItemTableViewId = new TableColumn<>("Id");
+    @FXML private TableColumn gradedItemTableViewTitle = new TableColumn<>("Title");
+    @FXML private TableColumn gradedItemTableViewDate = new TableColumn<>("Date");
+    @FXML private TableColumn gradedItemTableViewAverage = new TableColumn<>("Average");
 
     // Students Tab Personal Information Pane
     @FXML private TextFlow studentTab_PersonalInfo_LeftTextFlow = new TextFlow();
@@ -131,8 +167,19 @@ public class SchoolController implements Connectable{
     @FXML private Text subjectDescriptionData_text_4 = new Text("\n");
     @FXML private Text subjectNoSectionsData_text_5 = new Text("\n");
 
+    //Enrolment Pane
+    @FXML ChoiceBox enrolmentSectionChoiceBox = new ChoiceBox(); //Choice Box (Section choice box)
+    @FXML private Button enrolButton = new Button();
+    @FXML private Button unenrolButton = new Button();
+    public ArrayList<String> sectionIdList = new ArrayList<String>();
+
+    //Graded Item Pane
+    @FXML ChoiceBox gardedItemSectionChoiceBox = new ChoiceBox(); //Choice Box (Section choice box)
+    //@FXML private Button enrolButton = new Button();
+    //@FXML private Button unenrolButton = new Button();
+
     //Section Tab Buttons
-    @FXML private Button sectionEnrolmentViewButton;
+    @FXML public Button sectionEnrolmentViewButton = new Button();
 
     //Student tab buttons
     @FXML private Button removeStudentButton = new Button();
@@ -147,13 +194,85 @@ public class SchoolController implements Connectable{
     @FXML private Button editSubjectButton = new Button();
 
     //Sections tab buttons
-    @FXML private Button removeSectionButton = new Button();
-    @FXML private Button editSectionButton = new Button();
+    @FXML public Button removeSectionButton = new Button();
+    @FXML public Button editSectionButton = new Button();
 
     //Controller Constructor
     public SchoolController(){
         super();
         updateStatusTextFlow("HelloController Constructor Executed");
+    }
+
+    public void initializeSchoolTabPane(){
+        this.tabPaneSchool.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<Tab>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Tab> ov, Tab oldTab, Tab newTab) {
+                        System.out.println("Tab Selection changed");
+
+                        switch (newTab.getId()) {
+                            case "tabStudents":
+                                onTabStudentSelection();
+                                updateStatusTextFlow("Selected Students tab");
+                                break;
+                            case "tabInstructors":
+                                onTabInstructorsSelection();
+                                updateStatusTextFlow("Selected Instructors tab");
+                                break;
+                            case "tabSubjects":
+                                onTabSubjectsSelection();
+                                updateStatusTextFlow("Selected Subjects tab");
+                                break;
+                            case "tabSections":
+                                onTabSectionsSelection();
+                                updateStatusTextFlow("Selected Sections tab");
+                                break;
+                            case "tabEnrolment":
+                                onTabEnrolmentSelection();
+                                updateStatusTextFlow("Selected Enrolment tab");
+                                break;
+                            case "tabGradedItems":
+                                onTabGradedItemsSelection();
+                                updateStatusTextFlow("Selected Graded Items tab");
+                                break;
+                            case "tabGradeBook":
+                                onTabGradeBookSelection();
+                                updateStatusTextFlow("Selected Grade Book tab");
+                                break;
+                        }
+                    }
+                }
+        );
+    }
+
+    @FXML
+    public void unenrolButtonClick(){
+        String selectedSectionId = this.sectionIdList.get(this.enrolmentSectionChoiceBox.getSelectionModel().getSelectedIndex());
+        String selectedStudentId = this.enrolmentEnrolledSelectedItems.get(0).getStudentId();
+
+        //Send database request for student enrolment
+        Database.getDatabaseData("CALL unenrol_student(" + selectedSectionId + ", " + selectedStudentId + ");", "na", this.get_login_info(), this);
+
+        //Request data from database for Enrolled Tables
+        Database.getDatabaseData("CALL get_students_from_section(" + selectedSectionId + ");", "sectionEnrolledStudents", this.get_login_info(), this);
+
+        //Request data from database for Not Enrolled Tables
+        Database.getDatabaseData("CALL get_students_not_from_section(" + selectedSectionId + ");", "sectionNotenrolledStudents", this.get_login_info(), this);
+    }
+
+    @FXML
+    public void enrolButtonClick(){
+        String selectedSectionId = this.sectionIdList.get(this.enrolmentSectionChoiceBox.getSelectionModel().getSelectedIndex());
+        String selectedStudentId = this.enrolmentNotenrolledSelectedItems.get(0).getStudentId();
+
+        //Send database request for student enrolment
+        Database.getDatabaseData("CALL enrol_student(" + selectedSectionId + ", " + selectedStudentId + ");", "na", this.get_login_info(), this);
+
+        //Request data from database for Enrolled Tables
+        Database.getDatabaseData("CALL get_students_from_section(" + selectedSectionId + ");", "sectionEnrolledStudents", this.get_login_info(), this);
+
+        //Request data from database for Not Enrolled Tables
+        Database.getDatabaseData("CALL get_students_not_from_section(" + selectedSectionId + ");", "sectionNotenrolledStudents", this.get_login_info(), this);
     }
 
     @FXML
@@ -437,6 +556,90 @@ public class SchoolController implements Connectable{
                 subjectDescriptionData_text_4,
                 subjectNoSectionsData_text_5
         );
+    }
+
+    public void initialize_Enrolment_Tab(){
+        //Init buttons (Disable until student selected)
+        this.enrolButton.setDisable(true);
+        this.unenrolButton.setDisable(true);
+
+        //Initialize Tableview selection models
+        this.enrolmentEnrolledSelectionModel = this.enrolmentEnrolledTableView.getSelectionModel();
+        this.enrolmentEnrolledSelectionModel.setSelectionMode(SelectionMode.SINGLE);
+        this.enrolmentEnrolledSelectedItems = this.enrolmentEnrolledSelectionModel.getSelectedItems();
+        this.enrolmentNotenrolledSelectionModel = this.enrolmentNotenrolledTableView.getSelectionModel();
+        this.enrolmentNotenrolledSelectionModel.setSelectionMode(SelectionMode.SINGLE);
+        this.enrolmentNotenrolledSelectedItems = this.enrolmentNotenrolledSelectionModel.getSelectedItems();
+
+        this.enrolmentEnrolledSelectedItems.addListener(
+                new ListChangeListener<Student>() {
+                    @Override
+                    public void onChanged(
+                            Change<? extends Student> change) {
+                        System.out.println(
+                                "Selection changed: " + change.getList());
+                        System.out.println("enrolmentEnrolledSelectedItems size: " + enrolmentEnrolledSelectedItems.size());
+                        unenrolButton.setDisable(false);
+                        //onInstructorTableSelection(); -------
+                    }
+                });
+
+        this.enrolmentNotenrolledSelectedItems.addListener(
+                new ListChangeListener<Student>() {
+                    @Override
+                    public void onChanged(
+                            Change<? extends Student> change) {
+                        System.out.println(
+                                "Selection changed: " + change.getList());
+                        System.out.println("enrolmentUnenrolledSelectedItems size: " + enrolmentNotenrolledSelectedItems.size());
+                        enrolButton.setDisable(false);
+                        //onInstructorTableSelection(); -------
+                    }
+                });
+
+        //Adding action to the choice box
+        this.enrolmentSectionChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
+                (ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+
+                    System.out.println("enrolmentSectionChoiceBox listener");
+
+                    //Disable buttons until student selected
+                    this.enrolButton.setDisable(true);
+                    this.unenrolButton.setDisable(true);
+
+                    //This method is run at tab exit
+                    //The sectionList is cleared which is treated as change in selection
+                    //This new_val is -1 at some point
+                    //It has value of -1 on tab exit and so the choice will not actually be seen
+                    int sectionSelection = new_val.intValue();
+                    if (sectionSelection==-1){
+                        sectionSelection = 0;
+                    }
+
+                    //Do this on ChoiceBox selection change
+                    String selectedSectionId = this.sectionIdList.get(sectionSelection);
+
+                    //Request data from database for Enrolled Tables
+                    Database.getDatabaseData("CALL get_students_from_section(" + selectedSectionId + ");", "sectionEnrolledStudents", this.get_login_info(), this);
+
+                    //Request data from database for Not Enrolled Tables
+                    Database.getDatabaseData("CALL get_students_not_from_section(" + selectedSectionId + ");", "sectionNotenrolledStudents", this.get_login_info(), this);
+                });
+
+        //Initialize Enrolled table
+        this.enrolmentEnrolledTableViewStudentIdColumn.setCellValueFactory(new PropertyValueFactory<>("studentId"));
+        this.enrolmentEnrolledTableViewStudentNameColumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
+        this.enrolmentEnrolledTableViewStudentDofBColumn.setCellValueFactory(new PropertyValueFactory<>("studentDateOfBirth"));
+        this.enrolmentEnrolledTableView.setItems(this.enrolmentEnrolledList);
+
+        //Initialize Notenrolled table
+        this.enrolmentNotenrolledTableViewStudentIdColumn.setCellValueFactory(new PropertyValueFactory<>("studentId"));
+        this.enrolmentNotenrolledTableViewStudentNameColumn.setCellValueFactory(new PropertyValueFactory<>("studentName"));
+        this.enrolmentNotenrolledTableViewStudentDofBColumn.setCellValueFactory(new PropertyValueFactory<>("studentDateOfBirth"));
+        this.enrolmentNotenrolledTableView.setItems(this.enrolmentNotenrolledList);
+    }
+
+    public void initialize_GradeBook_Tab(){
 
     }
 
@@ -450,6 +653,7 @@ public class SchoolController implements Connectable{
 
     public void initialize_Section_Tab() {
         //Initialize buttons
+        sectionEnrolmentViewButton.setDisable(true);
         removeSectionButton.setDisable(true);
         editSectionButton.setDisable(true);
 
@@ -459,7 +663,7 @@ public class SchoolController implements Connectable{
         sectionSelectedItems = sectionSelectionModel.getSelectedItems();
 
         //Initialize Buttons
-        sectionEnrolmentViewButton = new Button();
+        //sectionEnrolmentViewButton = new Button();
 
         // Adding listener to the selected item list
         sectionSelectedItems.addListener(
@@ -472,6 +676,7 @@ public class SchoolController implements Connectable{
                         System.out.println("sectionSelectedItems size: " + sectionSelectedItems.size());
                         removeSectionButton.setDisable(false);
                         editSectionButton.setDisable(false);
+                        sectionEnrolmentViewButton.setDisable(false);
                         //onSectionTableSelection();
                     }
                 });
@@ -484,7 +689,62 @@ public class SchoolController implements Connectable{
         sectionTableViewDaysColumn.setCellValueFactory(new PropertyValueFactory<>("sectionDays"));
         sectionTableViewInstructorColumn.setCellValueFactory(new PropertyValueFactory<>("sectionInstructor"));
         sectionTableViewEnrolmentColumn.setCellValueFactory(new PropertyValueFactory<>("sectionEnrolment"));
+        sectionTableViewRoomColumn.setCellValueFactory(new PropertyValueFactory<>("sectionRoom"));
         sectionTableView.setItems(sectionList);
+    }
+
+    public void initialize_GradedItem_Tab(){
+        //Init buttons (Disable until student selected)
+        //this.enrolButton.setDisable(true);
+        //this.unenrolButton.setDisable(true);
+
+        //Initialize Tableview selection models
+        this.gradedItemSelectionModel = this.gradedItemTableView.getSelectionModel();
+        this.gradedItemSelectionModel.setSelectionMode(SelectionMode.SINGLE);
+        this.gradedItemSelectedItems = this.gradedItemSelectionModel.getSelectedItems();
+
+        this.gradedItemSelectedItems.addListener(
+                new ListChangeListener<GradedItem>() {
+                    @Override
+                    public void onChanged(
+                            Change<? extends GradedItem> change) {
+                        System.out.println("gradedItemSelectedItems size: " + gradedItemSelectedItems.size());
+                        onGradedItemsTableSelection();
+                    }
+                });
+
+        //Adding action to the choice box
+        this.gardedItemSectionChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
+                (ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+
+                    System.out.println("gardedItemSectionChoiceBox listener");
+
+                    //Disable buttons until student selected
+                    //this.enrolButton.setDisable(true);
+                    //this.unenrolButton.setDisable(true);
+
+                    //This method is run at tab exit
+                    //The sectionList is cleared which is treated as change in selection
+                    //This new_val is -1 at some point
+                    //It has value of -1 on tab exit and so the choice will not actually be seen
+                    int sectionSelection = new_val.intValue();
+                    if (sectionSelection==-1){
+                        sectionSelection = 0;
+                    }
+
+                    //Do this on ChoiceBox selection change
+                    String selectedSectionId = this.sectionIdList.get(sectionSelection);
+
+                    //Request data from database for Graded Items Table
+                    Database.getDatabaseData("CALL get_graded_items_by_section(" + selectedSectionId + ");", "sectionGradedItems", this.get_login_info(), this);
+                });
+
+        //Initialize Enrolled table
+        this.gradedItemTableViewId.setCellValueFactory(new PropertyValueFactory<>("gradedItemId"));
+        this.gradedItemTableViewTitle.setCellValueFactory(new PropertyValueFactory<>("gradedItemTitle"));
+        this.gradedItemTableViewDate.setCellValueFactory(new PropertyValueFactory<>("gradedItemDate"));
+        this.gradedItemTableViewAverage.setCellValueFactory(new PropertyValueFactory<>("gradedItemDate"));
+        this.gradedItemTableView.setItems(this.gradedItemList);
     }
 
 
@@ -493,10 +753,15 @@ public class SchoolController implements Connectable{
         //System.out.println("Starting intialize");
         //login_info = new Login("root","12345678"); //Initialize login info
 
+        initializeSchoolTabPane(); //Initialize the TabPane change listeners
+
+        //Initialize the individual tabs
         initialize_Student_Tab();
         initialize_Instructor_Tab();
         initialize_Subject_Tab();
         initialize_Section_Tab();
+        initialize_Enrolment_Tab();
+        initialize_GradedItem_Tab();
 
         //Initialize system message listView
         //listView1.setItems(systemMessages);
@@ -579,9 +844,9 @@ public class SchoolController implements Connectable{
                         "WHERE Sections.Subject_Id=" + subjectsSelectedItems.get(0).getSubjectId() + ";", "onSubjectsTableSelection", login_info, this);
     }
 
-    protected void onSectionsTableSelection() {
+    protected void onGradedItemsTableSelection() {
         // Must clear the list view or it keeps previous entries
-        //se.getItems().clear(); // Empty list
+        subjectTabListView.getItems().clear(); // Empty list
 
         // Display data in the personal information pane on the subject tab
         subjectIdData_text_1.setText(" " + subjectsSelectedItems.get(0).getSubjectId() + "\n");
@@ -592,9 +857,7 @@ public class SchoolController implements Connectable{
 
         // Request data from the database
         Database.getDatabaseData(
-                "SELECT Sections.Section_Id, Sections.Section_Time, Sections.Section_Room " +
-                        "FROM Sections " +
-                        "WHERE Sections.Subject_Id=" + subjectsSelectedItems.get(0).getSubjectId() + ";", "onSubjectsTableSelection", login_info, this);
+                "CALL get_graded_items_by_section(" + subjectsSelectedItems.get(0).getSubjectId() + ";", "onSubjectsTableSelection", login_info, this);
     }
 
     @FXML
@@ -649,11 +912,33 @@ public class SchoolController implements Connectable{
         //Disables the remove student button until a student is selected in the table
         removeSectionButton.setDisable(true);
         editSectionButton.setDisable(true);
+        sectionEnrolmentViewButton.setDisable(true);
 
         //Must clear the table or it keeps previous entries
-        sectionTableView.getItems().clear(); //Empty table
+        //sectionTableView.getItems().clear(); //Empty table
 
         //Request data from database
+        Database.getDatabaseData("SELECT * FROM sections_info_view;", "Sections", login_info, this);
+    }
+
+    @FXML
+    //When Subjects tab is selected
+    protected void onTabEnrolmentSelection() {
+        //Disables the remove enrolment button until a student is selected in the table
+        enrolButton.setDisable(true);
+        unenrolButton.setDisable(true);
+
+        //Must clear the table or it keeps previous entries
+        this.enrolmentEnrolledList.clear();
+        this.enrolmentNotenrolledList.clear();
+        //this.enrolmentEnrolledTableView.getItems().clear(); //Empty table
+        //this.enrolmentNotenrolledTableView.getItems().clear(); //Empty table
+
+        //Request data from database for the sections ChoiceBox
+        Database.getDatabaseData("SELECT * FROM sections_info_view;", "Enrolment", login_info, this);
+
+        /*
+        //Request data from database for the sections ChoiceBox
         Database.getDatabaseData("SELECT Sections.Section_Id, Subjects.Subject_Name, Subjects.Subject_Number, Subjects.Subject_Id, " +
                 "Sections.Section_Start_Time, Sections.Section_End_Time, Sections.Section_Days, " +
                 "Instructors.Instructor_First_Name, Instructors.Instructor_Last_Name, Instructors.Instructor_Id, Sections.Section_Room, " +
@@ -666,7 +951,46 @@ public class SchoolController implements Connectable{
                 "LEFT JOIN (SELECT Enrolment.Section_Id, COUNT(*) AS Section_Enrolment " +
                 "FROM Enrolment " +
                 "GROUP BY Enrolment.Section_Id) AS Selection " +
-                "ON Sections.Section_Id=Selection.Section_Id;", "Sections", login_info, this);
+                "ON Sections.Section_Id=Selection.Section_Id;", "Enrolment", login_info, this);
+
+         */
+    }
+
+    @FXML
+    //When Subjects tab is selected
+    protected void onTabGradedItemsSelection() {
+        //Disables the remove enrolment button until a student is selected in the table
+        //enrolButton.setDisable(true);
+        //unenrolButton.setDisable(true);
+
+        //Must clear the table or it keeps previous entries
+        this.gradedItemList.clear();
+
+        //Request data from database for the sections ChoiceBox
+        Database.getDatabaseData("SELECT * FROM sections_info_view;", "GradedItems", login_info, this);
+
+        /*
+        //Request data from database for the sections ChoiceBox
+        Database.getDatabaseData("SELECT Sections.Section_Id, Subjects.Subject_Name, Subjects.Subject_Number, Subjects.Subject_Id, " +
+                "Sections.Section_Start_Time, Sections.Section_End_Time, Sections.Section_Days, " +
+                "Instructors.Instructor_First_Name, Instructors.Instructor_Last_Name, Instructors.Instructor_Id, Sections.Section_Room, " +
+                "COALESCE(Selection.Section_Enrolment, 0) as value " +
+                "FROM Sections " +
+                "LEFT JOIN Subjects " +
+                "ON Subjects.Subject_Id=Sections.Subject_Id " +
+                "LEFT JOIN Instructors " +
+                "ON Sections.Instructor_Id=Instructors.Instructor_Id " +
+                "LEFT JOIN (SELECT Enrolment.Section_Id, COUNT(*) AS Section_Enrolment " +
+                "FROM Enrolment " +
+                "GROUP BY Enrolment.Section_Id) AS Selection " +
+                "ON Sections.Section_Id=Selection.Section_Id;", "Enrolment", login_info, this);
+
+         */
+    }
+
+    @FXML
+    protected void onTabGradeBookSelection() {
+
     }
 
     @Override
@@ -692,13 +1016,21 @@ public class SchoolController implements Connectable{
                 Section.processSectionsTable(rs, sectionList);
                 updateStatusTextFlow("Finished processing Sections Table");
                 break;
+            case "Enrolment":
+                Section.processSectionsTable(rs, sectionList);
+                Database.initialize_Section_ChoiceBox(this.enrolmentSectionChoiceBox, this.sectionList, this.sectionIdList); //Populates the Sections ChoiceBox
+                updateStatusTextFlow("Finished processing Sections Table");
+                break;
+            case "GradedItems":
+                Section.processSectionsTable(rs, sectionList);
+                Database.initialize_Section_ChoiceBox(this.gardedItemSectionChoiceBox, this.sectionList, this.sectionIdList); //Populates the Sections ChoiceBox
+                updateStatusTextFlow("Finished processing Sections Table");
+                break;
             case "onStudentTableSelection":
-                System.out.println("Processing Subjects table");
                 Student.processStudentTableSelect(rs, studentEnrolledSections);
                 updateStatusTextFlow("Finished processing Selected Student Enrolled Sections Table");
                 break;
             case "onInstructorTableSelection":
-                System.out.println("Processing Instructor table");
                 Instructor.processInstructorTableSelect(rs, instructorSections);
                 updateStatusTextFlow("Finished processing Instructor Sections Table");
                 break;
@@ -706,6 +1038,20 @@ public class SchoolController implements Connectable{
                 System.out.println("Processing Subjects table");
                 Subject.processSubjectsTableSelect(rs, subjectSections);
                 updateStatusTextFlow("Finished processing Selected Subject sections Table");
+                break;
+            case "sectionEnrolledStudents":
+                //System.out.println("Processing Subjects table");
+                Student.processStudentTable(rs, enrolmentEnrolledList);
+                updateStatusTextFlow("Finished processing Selected Section Students");
+                break;
+            case "sectionNotenrolledStudents":
+                //System.out.println("Processing Subjects table");
+                Student.processStudentTable(rs, enrolmentNotenrolledList);
+                updateStatusTextFlow("Finished processing Selected Section Not Enrolled Students");
+                break;
+            case "sectionGradedItems":
+                GradedItem.processGradedItemTable(rs, gradedItemList);
+                updateStatusTextFlow("Finished processing Graded Item list");
                 break;
         }
     }

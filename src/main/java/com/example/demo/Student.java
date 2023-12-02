@@ -13,6 +13,7 @@ public class Student {
     private SimpleStringProperty studentId;
     private SimpleStringProperty studentLastName;
     private SimpleStringProperty studentFirstName;
+    private SimpleStringProperty studentName;
     private SimpleStringProperty studentDateOfBirth;
     private SimpleStringProperty studentHomeTown;
     private SimpleStringProperty studentHomeCountry;
@@ -31,13 +32,13 @@ public class Student {
         this.studentHomeTown = new SimpleStringProperty(this, "studentHomeTown","n/a");
         this.studentHomeCountry = new SimpleStringProperty(this, "studentHomeCountry","n/a");
         this.studentHighSchoolAverage = new SimpleStringProperty(this, "studentHighSchoolAverage","n/a");
+        this.studentName = new SimpleStringProperty(this, "studentName","n/a");
     }
 
-    //Updates ObservableList<Babysitter> dataBBS
     public static void processStudentTable(ResultSet rs, ObservableList<Student> studentList){
         Student testStudent=null;
-        Integer studentIdInt = 0;
-        String studentDofBString;
+
+        studentList.clear(); //Clear old data from studentList
 
         try {
             while (rs.next()) {
@@ -48,6 +49,7 @@ public class Student {
                 String studentHomeTown =  new String(rs.getString(5));
                 String studentHomeCountry =  new String(rs.getString(6));
                 String studentHighSchoolAverage =  new String(rs.getString(7));
+                /*
                 System.out.println("Student Id:" + studentId);
                 System.out.println("studentFirstName:" + studentFirstName);
                 System.out.println("studentLastName:" + studentLastName);
@@ -57,8 +59,8 @@ public class Student {
                 System.out.println("studentHighSchoolAverage:" + studentHighSchoolAverage);
                 System.out.println("");
 
-                //Check if dataBBS array already contains the babysitter
-                System.out.println("Creating testStudent");
+                 */
+
                 testStudent = new Student();
                 testStudent.setStudentId(studentId);
                 testStudent.setStudentFirstName(studentFirstName);
@@ -67,12 +69,13 @@ public class Student {
                 testStudent.setStudentHomeTown(studentHomeTown);
                 testStudent.setStudentHomeCountry(studentHomeCountry);
                 testStudent.setStudentHighSchoolAverage(studentHighSchoolAverage);
+                testStudent.setStudentName(studentLastName + ", " + studentFirstName);
                 //studentId,studentLastName,studentFirstName,studentDofB,studentHomeTown);
-                System.out.println("Created testStudent");
+                //System.out.println("Created testStudent");
                 if (studentList.contains(testStudent)==false){
-                    System.out.println("Adding student to list");
+                    //System.out.println("Adding student to list");
                     studentList.add(testStudent);
-                    System.out.println("Added student to list");
+                    //System.out.println("Added student to list");
                 }
             }
         } catch (SQLException e) {
@@ -218,5 +221,17 @@ public class Student {
 
     public void setStudentHighSchoolAverage(String studentHighSchoolAverage){
         this.studentHighSchoolAverage.set(studentHighSchoolAverage);
+    }
+
+    public String getStudentNameAverage() {
+        return studentName.get();
+    }
+
+    public StringProperty studentNameProperty(){
+        return studentName;
+    }
+
+    public void setStudentName(String studentName){
+        this.studentName.set(studentName);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -36,21 +37,6 @@ public class EnrolmentViewController implements Connectable{
     //Enrolment View Buttons
     @FXML private Button sectionEnrolmentViewButton;
 
-    public void initialize_Section_ChoiceBox() {
-
-        for (Section section: this.schoolController.getSectionList()){
-            this.sectionChoiceBox.getItems().add("Id:" + section.getSectionId() +
-                    " " + section.getSectionSubject() +
-                    " " + section.getSectionInstructor() +
-                    " " + section.getSectionDays() +
-                    " Start:" + section.getSectionStartTime() +
-                    " End:" + section.getSectionEndTime());
-        }
-
-        //Initialize section selection
-        this.sectionChoiceBox.getSelectionModel().select(this.schoolController.getSectionList().indexOf(this.schoolController.sectionSelectedItems.get(0)));
-    }
-
     public void on_ChoiceBox_selection_change(){
         //Update the section selection list
         this.schoolController.sectionSelectedItems.set(0,
@@ -62,17 +48,9 @@ public class EnrolmentViewController implements Connectable{
     }
 
     public void update_section_student_data(){
-        //Must clear the table or it keeps previous entries
-        this.enrolmentViewStudentTableView.getItems().clear(); //Empty table
-
         //Request data from database
-        Database.getDatabaseData("SELECT Students.Student_Id, Students.Student_First_Name ,Students.Student_Last_Name ,Students.Student_Date_Of_Birth, " +
-                "Students.Student_Home_Town ,Students.Student_Home_Country ,Students.Student_High_School_Average " +
-                "FROM Students " +
-                "INNER JOIN (SELECT * " +
-                "FROM Enrolment " +
-                "WHERE Enrolment.Section_Id=" + this.schoolController.sectionSelectedItems.get(0).getSectionId() + ") AS Selection " +
-                "ON Students.Student_Id=Selection.Student_Id;", "sectionStudents", this.schoolController.get_login_info(), this);
+        Database.getDatabaseData("CALL get_students_from_section(" + this.schoolController.sectionSelectedItems.get(0).getSectionId() + ");",
+                "sectionStudents", this.schoolController.get_login_info(), this);
     }
 
     public void initialize_Student_Enrolment() {
@@ -106,8 +84,22 @@ public class EnrolmentViewController implements Connectable{
     public void initData(SchoolController schoolController){
         this.schoolController = schoolController;
 
-        this.initialize_Student_Enrolment();
-        this.initialize_Section_ChoiceBox();
+        this.initialize_Student_Enrolment(); //Initializes the tab
+        Database.initialize_Section_ChoiceBox(this.sectionChoiceBox, this.schoolController.getSectionList(), this.schoolController.sectionIdList);
+
+        //Initialize section selection
+        this.sectionChoiceBox.getSelectionModel().select(this.schoolController.getSectionList().indexOf(this.schoolController.sectionSelectedItems.get(0)));
+
+        //Adding action to the choice box
+        this.sectionChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
+                (ObservableValue<? extends Number> ov, Number old_val, Number new_val) -> {
+                    //Do this on ChoiceBox selection change
+                    String selectedSectionId = this.schoolController.sectionIdList.get(new_val.intValue());
+
+                    //Request data from database
+                    Database.getDatabaseData("CALL get_students_from_section(" + selectedSectionId + ");",
+                            "sectionStudents", this.schoolController.get_login_info(), this);
+                });
     }
 
     @Override

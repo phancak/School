@@ -62,7 +62,7 @@ public class NewSectionController implements Connectable{
         if(!newSection){
             this.title.setText("Edit Section");
             this.addSectionButton.setText("Modify Section Entry");
-            this.subjectChoiceBox.getSelectionModel().select(this.subjectIdList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionId()));
+            this.subjectChoiceBox.getSelectionModel().select(this.subjectIdList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionSubjectId()));
             this.startTimeChoiceBox.getSelectionModel().select(this.startTimeList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionStartTime()));
             this.endTimeChoiceBox.getSelectionModel().select(this.startTimeList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionEndTime()));
             this.instructorChoiceBox.getSelectionModel().select(this.instructorIdList.indexOf(this.schoolController.sectionSelectedItems.get(0).getSectionInstructorId()));
@@ -229,14 +229,20 @@ public class NewSectionController implements Connectable{
                 Database.getDatabaseData("UPDATE Sections " +
                                 "SET Subject_Id='" + this.subjectIdList.get(this.subjectChoiceBox.getSelectionModel().getSelectedIndex()) + "', Section_Start_Time='" + this.startTimeChoiceBox.getValue() +
                                 "', Section_End_Time='" + this.endTimeChoiceBox.getValue() + "', Section_Room='" + this.roomTextField.getText() +
-                                "', Section_Days='" + this.daysChoiceBox.getValue() + "'" +
-                                "WHERE Instructor_Id=" + schoolController.sectionSelectedItems.get(0).getSectionId() + ";",
+                                "', Section_Days='" + this.daysChoiceBox.getValue() +
+                                "', Instructor_Id='" + this.instructorIdList.get(this.instructorChoiceBox.getSelectionModel().getSelectedIndex()) + "' " +
+                                "WHERE Section_Id=" + schoolController.sectionSelectedItems.get(0).getSectionId() + ";",
                         "update", this.schoolController.get_login_info(), this);
 
                 //Close the new student window
                 Stage currentStage = (Stage) this.subjectChoiceBox.getScene().getWindow();
                 currentStage.close();
                 this.schoolController.onTabSectionsSelection(); //Reacquire Section list
+
+                //Disable buttons - No selection made
+                this.schoolController.sectionEnrolmentViewButton.setDisable(true);
+                this.schoolController.removeSectionButton.setDisable(true);
+                this.schoolController.editSectionButton.setDisable(true);
             }
         }
     }
